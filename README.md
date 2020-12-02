@@ -1,3 +1,4 @@
+# Script
+The Script repository contains scripts that i create, modify for customer's requirements, my own learnings. 
 # snapshotAzure
-This script creates, restores as well as delete a snapshot for a VM from Azure Cloud. 
-The delete functionality is still in progress.
+  The script creates, restores and deletes snapshots of disks attached to an Azure VM.  
