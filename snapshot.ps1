@@ -6,7 +6,7 @@ Param(
     [string] $Snapname,
     [switch] $Backup,
     [switch] $Restore,
-    [switch] $Remove
+    [switch] $Delete
 )
 
 Function Msgbox($caption,$message,$type,$MaxSize){
@@ -161,39 +161,42 @@ Function VMRestore($vmInfo){
 
 Function RemoveSnap($vminfo){
     #OS Disk
-    $tDiskType = (Get-AzDisk -DiskName $vminfo.OsDisk.name).sku.name
+    #$tDiskType = (Get-AzDisk -DiskName $vminfo.OsDisk.name).sku.name
     #changes
     $tSnapShotNewName = (VMShortName $vminfo.OsDisk.name) + ".snap" + $vminfo.SnapName
-    $tSnapShot = Get-AZSnapshot -SnapshotName $tSnapShotNewName
+    #Write-Host $tSnapShotNewName
+    $tSnapShot = (Get-AZSnapshot -SnapshotName $tSnapShotNewName).Name
+    #if($tSnapShotNewName -eq $tSnapShot) {Write-Host "Mukesh"; break}
     #$tSnapShot = Get-AZSnapshot -SnapshotName ($vminfo.OsDisk.name + ".snap" + $vminfo.SnapName)
-    $tDiskConfig = New-AzDiskConfig -SkuName $tDiskType -Location $vmInfo.location -CreateOption Copy -SourceResourceId $tsnapshot.Id  
-    $tNewName = (VMShortName $vminfo.OsDisk.name) + $vmInfo.SnapName #Name change
-    $temp = New-AzDisk -Disk $tDiskConfig -ResourceGroupName $vmInfo.ResourceGroupName -DiskName $tNewName
-    If ($temp.ProvisioningState -eq "Succeeded") {
-        Msgbox "RestoreSnap (OS):" ("New Disk " + $tnewName + " was created.") 0 125
-    } Else {Msgbox "RestoreSnap (OS):" ("New Disk " + $tnewName + " creation failed") 2 125}
-    $tNewName = $null
+    #$tDiskConfig = New-AzDiskConfig -SkuName $tDiskType -Location $vmInfo.location -CreateOption Copy -SourceResourceId $tsnapshot.Id  
+    #$tNewName = (VMShortName $vminfo.OsDisk.name) + $vmInfo.SnapName #Name change
+    #$temp = New-AzDisk -Disk $tDiskConfig -ResourceGroupName $vmInfo.ResourceGroupName -DiskName $tNewName
+    $temp = Remove-AzSnapshot -ResourceGroupName $vmInfo.ResourceGroupName -SnapshotName $tSnapShot -Force #-WhatIf
+    If ($temp.Status -eq "Succeeded") {
+        Msgbox "RemoveSnap (OS):" ("Snapshot " + $tSnapShot + " was deleted.") 0 125
+    } Else {Msgbox "RemoveSnap (OS):" ("snapshot " + $tSnapShot + " deletion failed") 2 125}
+    #$tNewName = $null
     $tSnapShotNewName = $null
     #Data Disk(s)
     ForEach($disk in $vmInfo.DataDisk){
-        $tDiskType=$null
+        #$tDiskType=$null
         $tSnapshot =$null
-        $tDiskConfig=$null
-        $tNewName=$null
-        $tDiskType = (Get-AzDisk -DiskName $disk.name).sku.name
+        #$tDiskConfig=$null
+        #$tNewName=$null
+        #$tDiskType = (Get-AzDisk -DiskName $disk.name).sku.name
         #changes
         $tSnapShotNewName = (VMShortName $Disk.name) + ".snap" + $vminfo.SnapName
-        $tSnapShot = Get-AZSnapshot -SnapshotName $tSnapShotNewName
+        $tSnapShot = (Get-AZSnapshot -SnapshotName $tSnapShotNewName).Name
         #$tSnapShot = Get-AZSnapshot -SnapshotName ($vminfo.OsDisk.name + ".snap" + $vminfo.SnapName)
-        $tDiskConfig = New-AzDiskConfig -SkuName $tDiskType -Location $vmInfo.location -CreateOption Copy -SourceResourceId $tsnapshot.Id
+        #$tDiskConfig = New-AzDiskConfig -SkuName $tDiskType -Location $vmInfo.location -CreateOption Copy -SourceResourceId $tsnapshot.Id
         $tNewName = (VMShortName $Disk.name) + $vmInfo.SnapName  #name change
         If ($tnewName -ne $False) {
-            $temp = New-AzDisk -Disk $tDiskConfig -ResourceGroupName $vmInfo.ResourceGroupName -DiskName $tNewName
-            If ($temp.ProvisioningState -eq "Succeeded") {
-                Msgbox "RestoreSnap (Data):" ("New Disk " + $tnewName + " was created.") 0 125
-            } Else {Msgbox "RestoreSnap (Data):" ("New Disk " + $tnewName + " creation failed") 2 125}
+            $temp = Remove-AzSnapshot -ResourceGroupName $vmInfo.ResourceGroupName -SnapshotName $tSnapShot -Force #-WhatIf
+            If ($temp.Status -eq "Succeeded") {
+                Msgbox "RemoveSnap (Data):" ("Snapshot " + $tSnapShot + " was deleted.") 0 125
+            } Else {Msgbox "RemoveSnap (Data):" ("snapshot " + $tSnapShot + " deletion failed") 2 125}
         } else {
-            Msgbox "RestoreSnap (Data): " ("Name couldnt be found " + $tNewName) 2 125
+            Msgbox "RemoveSnap (Data): " ("Name couldnt be found " + $tSnapShot) 2 125
         }       
         $tNewName = $null
         $tSnapShotNewName = $null
@@ -201,8 +204,8 @@ Function RemoveSnap($vminfo){
 }
 
 #Body Script
-If (($PSBoundParameters.Keys.Contains("backup")) -and ($PSBoundParameters.Keys.Contains("restore"))) {
-    Msgbox "INPUT ERROR:" "You need to select either Backup or Restore switch." 2 125
+If (($PSBoundParameters.Keys.Contains("backup")) -and ($PSBoundParameters.Keys.Contains("restore")) -and ($PSBoundParameters.Keys.Contains("delete"))) {
+    Msgbox "INPUT ERROR:" "You need to select either of these switches : Backup , Restore , Delete." 2 125
     break
 }
 
@@ -221,6 +224,6 @@ If ($PSBoundParameters.Keys.Contains("restore")) {
         RestoreSnap $CurrentVM
         VMRestore $CurrentVM   
 }
-If ($PSBoundParameters.Keys.Contains("remove")) {
+If ($PSBoundParameters.Keys.Contains("delete")) {
     RemoveSnap $CurrentVM
 }
