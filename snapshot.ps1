@@ -1,6 +1,6 @@
 Param(
     [Parameter(Mandatory=$true,HelpMessage="The VM Name in the current Azure subscription")]
-    [ValidateScript({Get-AZVM -Name ($_)})]
+    #[ValidateScript({Get-AZVM -Name ($_)})]
     [string] $VMName,
     [Parameter(Mandatory=$true,HelpMessage="Short name for the Snapshot.")]
     [string] $Snapname,
@@ -33,12 +33,29 @@ Function VMShortName($objName){
     Return $objName.Split(".")[0]
 }
 
+
+Function VMStop($VMName, $VMResourceGroupName){
+        Stop-AzVM -Name $VMName -ResourceGroupName $VMResourceGroupName -Force
+        Start-Sleep -Seconds 60 
+        $tStopStatus = (Get-AzVM -VMName $VMName -ResourceGroupName $VMResourceGroupName -Status).Statuses
+        $StopStatus = (($tStopStatus | Where-Object {$_.Code -like "PowerState*"} | Select-Object -ExpandProperty code).split("/")[1]).ToString()
+        Return $StopStatus
+}
+
+Function VMStart($VMName, $VMResourceGroupName){
+    Start-AzVM -Name $VMName -ResourceGroupName $VMResourceGroupName
+    Start-Sleep -Seconds 60
+    $tStartStatus = (Get-AzVM -VMName $VMName -ResourceGroupName $VMResourceGroupName -Status).Statuses
+    $StartStatus = (($tStartStatus | Where-Object {$_.Code -like "PowerState*"} | Select-Object -ExpandProperty code).split("/")[1]).ToString()
+    Return $StartStatus
+}
 Function VMInventory($VMName){
-    $info = "" | Select-Object Name, ResourceGroupName, Location, VMSize, OSDisk, DataDisk, SnapName, TotalDataDisks
+    $info = "" | Select-Object Name, ResourceGroupName, Location, PowerState, VMSize, OSDisk, DataDisk, SnapName, TotalDataDisks
     $vm = Get-AzVM -Name $VMName
     $info.Name = $vm.Name
     $info.ResourceGroupName = $vm.ResourceGroupName
     $info.Location = $vm.Location
+    $info.PowerState = (Get-AzVM -VMName $VMName -Status).PowerState.Split("")[1]
     $info.VMSize = $vm.HardwareProfile.VmSize
     $info.OSDisk = $vm.StorageProfile.OsDisk
     $info.DataDisk = $vm.StorageProfile.DataDisks
@@ -63,7 +80,7 @@ Function VMInventory($VMName){
 Function VMSnapshot($vmInfo){
     #Creating a new snapshot
     $vm_OSDisk = Get-AzDisk -ResourceGroupName $vmInfo.ResourceGroupName -DiskName $vmInfo.OSDisk.Name
-    $vm_OSSnapConfig = New-AzSnapshotConfig -SourceUri $vm_OSDisk.Id -CreateOption Copy -Location $vmInfo.location -Tag @{"AutoSnap"="True";"CreatedBy"=""}
+    $vm_OSSnapConfig = New-AzSnapshotConfig -SourceUri $vm_OSDisk.Id -CreateOption Copy -Location $vmInfo.location -Tag @{"AutoSnap"="True"}
     $tNewName = (VMShortName $vminfo.OsDisk.name) + ".snap" + $vminfo.SnapName
     $vm_OSDiskSnap = New-AzSnapshot -SnapshotName $tNewName -Snapshot $vm_OSSnapConfig -ResourceGroupName $vmInfo.ResourceGroupName
     If ($vm_OSDiskSnap.ProvisioningState -eq 'Succeeded'){
@@ -84,9 +101,11 @@ Function VMSnapshot($vmInfo){
             Msgbox "VMSnapshot (Data):" ("Creation of " + $tNewName + " failed.") 2 125  
         }
     }
+    
     #Saving as JSON
     $vmInfo | convertto-json | out-file  ($vmInfo.Name + $vmInfo.Snapname + ".json") 
     Msgbox "VMSnapshot:" ("Creation of " + $vmInfo.Name +  $vmInfo.Snapname + ".json") 0 125  
+    
 }
 
 Function RestoreSnap($vminfo){
@@ -164,7 +183,6 @@ Function RemoveSnap($vminfo){
     #$tDiskType = (Get-AzDisk -DiskName $vminfo.OsDisk.name).sku.name
     #changes
     $tSnapShotNewName = (VMShortName $vminfo.OsDisk.name) + ".snap" + $vminfo.SnapName
-    #Write-Host $tSnapShotNewName
     $tSnapShot = (Get-AZSnapshot -SnapshotName $tSnapShotNewName).Name
     #if($tSnapShotNewName -eq $tSnapShot) {Write-Host "Mukesh"; break}
     #$tSnapShot = Get-AZSnapshot -SnapshotName ($vminfo.OsDisk.name + ".snap" + $vminfo.SnapName)
@@ -204,26 +222,55 @@ Function RemoveSnap($vminfo){
 }
 
 #Body Script
+
 If (($PSBoundParameters.Keys.Contains("backup")) -and ($PSBoundParameters.Keys.Contains("restore")) -and ($PSBoundParameters.Keys.Contains("delete"))) {
     Msgbox "INPUT ERROR:" "You need to select either of these switches : Backup , Restore , Delete." 2 125
     break
 }
-
+Write-Host
+# Use Service principal to run this script on Azure
+# $subscriptionId='<subscriptionId>'
+ $appId='<applicationId>'
+ $password='<Secret>'
+ $tenantId='<TenantId>'
+# Use the application ID as the username, and the secret as password
+$pswrd = ConvertTo-SecureString -String $password -AsPlainText -Force
+$credentials = New-Object System.Management.Automation.PSCredential ($appId, $pswrd)
+Connect-AzAccount -ServicePrincipal -Credential $credentials -Tenant $tenantId | Out-Null
 Write-Host
 Write-Host -ForegroundColor Yellow "Working on Virtual Machine...: " $VMName
 Write-Host -ForegroundColor Yellow "Performing the requested snapshot Operation........:" $Snapname
 Write-Host     
 
 $global:vSnapName = "." + $Snapname
+$global:flag = $false
 $CurrentVM = VMInventory $VMName
 
 If ($PSBoundParameters.Keys.Contains("backup")) {
+    #Add shutdown portion to stop the VM before snapshot 
+    # maintain the same state
+    if(!($CurrentVM.PowerState -ne "running")){
+        $VMstateFrorStop = VMStop $CurrentVM.Name $CurrentVM.ResourceGroupName 
+        Write-Host $VMstateFrorStop
+        Msgbox "VM PowerState :" ("The VM: " + $CurrentVM.Name + " is " + $VMstateFrorStop.status +".") 0 125
+        $flag = $true
+    }
     VMSnapshot $CurrentVM
+
+    if($flag){
+        $VMstateForStart = VMStart $CurrentVM.Name $CurrentVM.ResourceGroupName 
+        Write-Host $VMstateForStart
+        Msgbox "VM PowerState :" ("The VM: " + $CurrentVM.Name + " is " + $VMstateForStart.status +".") 0 125
+    }
 }
 If ($PSBoundParameters.Keys.Contains("restore")) {
         RestoreSnap $CurrentVM
         VMRestore $CurrentVM   
 }
 If ($PSBoundParameters.Keys.Contains("delete")) {
-    RemoveSnap $CurrentVM
+        RemoveSnap $CurrentVM
 }
+
+
+
+
