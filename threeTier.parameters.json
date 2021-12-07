@@ -1,0 +1,203 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "subscriptionId": {
+        "value": "cfc18062-78d6-4b71-b71a-c001708cdd09"
+      },
+      "environment":{
+        "value": "dev"
+      },
+      "webCountNumber": {
+        "value": [
+          "001"
+        ]
+      },
+      "appCountNumber": {
+        "value": [
+          "001"
+        ]
+      },
+      "dbCountNumber": {
+        "value": [
+          "001"
+        ]
+      },
+      "webStorageAccountName": {
+        "value":"saweb"
+      },
+      "appStorageAccountName": {
+        "value":"saapp"
+      },
+      "dbStorageAccountName": {
+        "value":"sadb85"
+      },
+      "appvmName": {
+        "value": "mukapp"
+      },
+      "appvmSize": {
+        "value": "Standard_D2s_v3"
+      },
+      "webvmName": {
+        "value": "mukweb"
+      },
+      "webvmSize": {
+        "value": "Standard_D2s_v3"
+      },
+      "dbvmName": {
+        "value": "mukdb"
+      },
+      "dbvmSize": {
+        "value": "Standard_D2s_v3"
+      },
+      "vmAdminUsername": {
+        "value": "azureuser"
+      },
+      "vmAdminPassword": {
+        "reference": {
+          "keyVault": {
+              "id": "/subscriptions/cfc18062-78d6-4b71-b71a-c001708cdd09/resourceGroups/Mukesh-General/providers/Microsoft.KeyVault/vaults/mukeshKV"
+          },
+          "secretName": "vmAdminPassword"
+      }
+      },
+      "vnetName": {
+        "value": "Mukesh-General-vnet"
+      },
+      "vnetRG": {
+        "value": "Mukesh-General"
+      },
+      "websubnetName": {
+        "value": "default"
+      },
+      "appsubnetName": {
+        "value": "default"
+      },
+      "dbsubnetName": {
+        "value": "default"
+      },
+      "appASName": {
+        "value": "avsetApp"
+      },
+      "webASName": {
+        "value": "avsetweb"
+      },
+      "dbASName": {
+        "value": "avsetdb"
+      },
+      "faultDomain": {
+        "value": 2
+      },
+      "updateDomain": {
+        "value": 2
+      },
+      "dataDisks": {
+        "value": [
+          {
+            "caching": "ReadOnly",
+            "createOption": "Empty",
+            "diskSizeGB": "32",
+            "lun": "0",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          }
+        ]
+      },
+      "appdataDisks": {
+        "value": [
+          {
+            "caching": "ReadOnly",
+            "createOption": "Empty",
+            "diskSizeGB": "32",
+            "lun": "0",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          }
+        ]
+      },
+      "dbdataDisks": {
+        "value": [
+          {
+            "caching": "ReadOnly",
+            "createOption": "Empty",
+            "diskSizeGB": "32",
+            "lun": "0",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          }
+        ]
+      },
+      "webwindowsOSVersion": {
+        "value": "2016-Datacenter"
+      },
+      "webstorageAccType": {
+        "value": "Standard_LRS"
+      },
+      "appwindowsOSVersion": {
+        "value": "2016-Datacenter"
+      },
+      "appstorageAccType": {
+        "value": "Standard_LRS"
+      },
+      "dbwindowsOSVersion": {
+        "value": "2016-Datacenter"
+      },
+      "dbstorageAccType": {
+        "value": "Standard_LRS"
+      },
+      "webloadBalancer": {
+        "value": "mukeshweblb"
+      },
+      "webhealthProbeProtcol": {
+        "value": "TCP"
+      },
+      "webHTTPrequestPath": {
+        "value": "/"
+      },
+      "webfrontEndPort": {
+        "value": 80
+      },
+      "webBackEndPort": {
+        "value": 80
+      },
+      "apploadBalancer": {
+        "value": "mukeshapplb"
+      },
+      "apphealthProbeProtcol": {
+        "value": "TCP"
+      },
+      "appHTTPrequestPath": {
+        "value": "/"
+      },
+      "appfrontEndPort": {
+        "value": 80
+      },
+      "appBackEndPort": {
+        "value": 80
+      },
+      "dbloadBalancer": {
+        "value": "mukeshdblb"
+      },
+      "dbhealthProbeProtcol": {
+        "value": "TCP"
+      },
+      "dbHTTPrequestPath": {
+        "value": "/"
+      },
+      "dbfrontEndPort": {
+        "value": 80
+      },
+      "dbBackEndPort": {
+        "value": 80
+      },
+      "remoteAllowedCIDR": {
+        "value": "0.0.0.0/0"
+      },
+      "vmNic1Name": {
+        "value": "nic1"
+      }
+    }
+  }

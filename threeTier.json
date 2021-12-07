@@ -1,0 +1,874 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"subscriptionId": {
+			"type": "string"
+		},
+		"environment":{
+			"allowedValues": [
+				"dev",
+				"prod"
+			],
+			"type":"string"
+		},
+		"webCountNumber": {
+			"type": "array"
+		},
+		"appCountNumber": {
+			"type": "array"
+		},
+		"dbCountNumber": {
+			"type": "array"
+		},
+		"webStorageAccountName": {
+			"type": "string"
+		},
+		"appStorageAccountName": {
+			"type": "string"
+		},
+		"dbStorageAccountName": {
+			"type": "string"
+		},
+		"appvmName": {
+			"type": "string"
+		},
+		"appvmSize": {
+			"type": "string"
+		},
+
+		"webvmName": {
+			"type": "string"
+		},
+		"webvmSize": {
+			"type": "string"
+		},
+		"dbvmName": {
+			"type": "string"
+		},
+		"dbvmSize": {
+			"type": "string"
+		},
+		"vmAdminUsername": {
+			"type": "string",
+			"metadata": {
+				"description": "Provide Username of local account which will be created as part of provisioning on virtual machine and it should not contain 'admin' keyword."
+			}
+		},
+		"vmAdminPassword": {
+			"type": "securestring",
+			"metadata": {
+				"description": "The following policy describes the available password settings that can be applied to user accounts that are created and managed in Azure AD."
+			}
+		},
+		"vnetName": {
+			"type": "string"
+		},
+		"vnetRG": {
+			"type": "string"
+		},
+		"websubnetName": {
+			"type": "string"
+		},
+		"appsubnetName": {
+			"type": "string"
+		},
+		"dbsubnetName": {
+			"type": "string"
+		},
+		"appASName": {
+			"type": "string"
+		},
+		"webASName": {
+			"type": "string"
+		},
+		"dbASName": {
+			"type": "string"
+		},
+		"faultDomain": {
+			"type": "int"
+		},
+		"updateDomain": {
+			"type": "int"
+		},
+		"dataDisks": {
+			"type": "array"
+		},
+        "appdataDisks": {
+			"type": "array"
+		},
+        "dbdataDisks": {
+			"type": "array"
+		},
+		"webwindowsOSVersion": {
+			"type": "string"
+		},
+		"webstorageAccType": {
+			"defaultValue": "Standard_LRS",
+			"type": "string"
+		},
+		"appwindowsOSVersion": {
+			"allowedValues": [
+				"2016-Datacenter",
+				"2019-Datacenter"
+			],
+			"type": "string"
+		},
+		"appstorageAccType": {
+			"type": "string"
+		},
+		"dbwindowsOSVersion": {
+			"allowedValues": [
+				"2016-Datacenter",
+				"2019-Datacenter"
+			],
+			"type": "string"
+		},
+		"dbstorageAccType": {
+			"defaultValue": "Standard_LRS",
+			"type": "string"
+		},
+		"webloadBalancer": {
+			"type": "string",
+			"metadata": {
+				"description": "loadBalancer name which will be deployed as part of this request"
+			}
+		},
+		"webhealthProbeProtcol": {
+			"type": "string",
+			"defaultValue": "TCP",
+			"metadata": {
+				"description": "Enter the name of Health Probe Protocol"
+			}
+		},
+		"webHTTPrequestPath": {
+			"type": "string",
+			"defaultValue": "/",
+			"metadata": {
+				"description": "Enter the path of http or https Health Probe Protocol"
+			}
+		},
+		"webfrontEndPort": {
+			"type": "int",
+			"defaultValue": 80,
+			"metadata": {
+				"description": "A specific port bound to a specific front-end IP address to listen the traffic"
+			}
+		},
+		"webBackEndPort": {
+			"type": "int",
+			"defaultValue": 80,
+			"metadata": {
+				"description": "You can choose to route traffic to the virtual machines in the backend pool using a different port than the one clients use to communicate with the load balancer."
+			}
+		},
+		"apploadBalancer": {
+			"type": "string",
+			"metadata": {
+				"description": "loadBalancer name which will be deployed as part of this request"
+			}
+		},
+		"apphealthProbeProtcol": {
+			"type": "string",
+			"defaultValue": "TCP",
+			"metadata": {
+				"description": "Enter the name of Health Probe Protocol"
+			}
+		},
+		"appHTTPrequestPath": {
+			"type": "string",
+			"defaultValue": "/",
+			"metadata": {
+				"description": "Enter the path of http or https Health Probe Protocol"
+			}
+		},
+		"appfrontEndPort": {
+			"type": "int",
+			"defaultValue": 80,
+			"metadata": {
+				"description": "A specific port bound to a specific front-end IP address to listen the traffic"
+			}
+		},
+		"appBackEndPort": {
+			"type": "int",
+			"defaultValue": 80,
+			"metadata": {
+				"description": "You can choose to route traffic to the virtual machines in the backend pool using a different port than the one clients use to communicate with the load balancer."
+			}
+		},
+		"dbloadBalancer": {
+			"type": "string",
+			"metadata": {
+				"description": "loadBalancer name which will be deployed as part of this request"
+			}
+		},
+		"dbhealthProbeProtcol": {
+			"type": "string",
+			"defaultValue": "TCP",
+			"metadata": {
+				"description": "Enter the name of Health Probe Protocol"
+			}
+		},
+		"dbHTTPrequestPath": {
+			"type": "string",
+			"defaultValue": "/",
+			"metadata": {
+				"description": "Enter the path of http or https Health Probe Protocol"
+			}
+		},
+		"dbfrontEndPort": {
+			"type": "int",
+			"defaultValue": 80,
+			"metadata": {
+				"description": "A specific port bound to a specific front-end IP address to listen the traffic"
+			}
+		},
+		"dbBackEndPort": {
+			"type": "int",
+			"defaultValue": 80,
+			"metadata": {
+				"description": "You can choose to route traffic to the virtual machines in the backend pool using a different port than the one clients use to communicate with the load balancer."
+			}
+		},
+		"remoteAllowedCIDR": {
+			"type": "string",
+			"minLength": 7,
+			"defaultValue": "0.0.0.0/0",
+			"metadata": {
+				"description": "Enter Public IP CIDR to allow for accessing the deployment.Enter in 0.0.0.0/0 format, you can always modify these later in NSG Settings"
+			}
+		},
+		"vmNic1Name": {
+			"type": "string"
+		}
+	},
+	"variables": {
+		"location": "[resourceGroup().location]",
+		"rgName": "[resourceGroup().name]",
+		"lbSkuName": "Standard",
+		"webStorageAccountName": "[concat(parameters('webStorageAccountName'), parameters('environment'))]",
+		"appStorageAccountName": "[concat(parameters('appStorageAccountName'), parameters('environment'))]",
+		"dbStorageAccountName": "[concat(parameters('dbStorageAccountName'), parameters('environment'))]",
+		"webNSGName": "[concat(parameters('webvmName'),'webnsg')]",
+		"appNSGName": "[concat(parameters('appvmName'),'appnsg')]",
+		"databaseNSGName": "[concat(parameters('dbvmName'),'webnsg')]",
+		"vnetName": "[toLower(parameters('vnetName'))]",
+		"vnetResourceId": "[concat('/subscriptions/', parameters('subscriptionId'), '/resourcegroups/', parameters('vnetRG'), '/providers/Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
+		"osDiskName": "osdisk",
+		"faultDomain": "[parameters('faultDomain')]",
+		"updateDomain": "[parameters('updateDomain')]",
+		"webloadBalancerName": "[parameters('webloadBalancer')]",
+		"weblbID": "[resourceId('Microsoft.Network/loadBalancers',variables('webloadBalancerName'))]",
+		"webloadBalancerFrontEndName": "[concat(variables('webloadBalancerName'),'-frontendipconfig')]",
+		"webloadBalancerBackEndName": "webloadBalancerBackEnd",
+		"webloadBalancerProbeName": "webloadBalancerHttpProbe",
+		"webhealthProbeName": "webloadBalancerHealthPorbe",
+		"webLBBEAddressPoolID": "[concat(variables('weblbID'),'/backendAddressPools/',variables('webbePoolName'))]",
+		"webLBProbeID1": "[concat(variables('weblbID'),'/probes/',variables('webhealthProbeName'))]",
+		"webloadBalancerNatPoolName": "webloadBalancerNatPool",
+		"webfrontEndIPConfigID": "[concat(variables('weblbID'),'/frontendIPConfigurations/',variables('webloadBalancerFrontEndName'))]",
+		"webbePoolName": "webbepool",
+		"apploadBalancerName": "[parameters('apploadBalancer')]",
+		"applbID": "[resourceId('Microsoft.Network/loadBalancers',variables('apploadBalancerName'))]",
+		"apploadBalancerFrontEndName": "[concat(variables('apploadBalancerName'),'-frontendipconfig')]",
+		"apploadBalancerBackEndName": "apploadBalancerBackEnd",
+		"apploadBalancerProbeName": "apploadBalancerHttpProbe",
+		"apphealthProbeName": "apploadBalancerHealthPorbe",
+		"appLBBEAddressPoolID": "[concat(variables('applbID'),'/backendAddressPools/',variables('appbePoolName'))]",
+		"appLBProbeID1": "[concat(variables('applbID'),'/probes/',variables('apphealthProbeName'))]",
+		"apploadBalancerNatPoolName": "apploadBalancerNatPool",
+		"appfrontEndIPConfigID": "[concat(variables('applbID'),'/frontendIPConfigurations/',variables('apploadBalancerFrontEndName'))]",
+		"appbePoolName": "appbepool",
+		"dbloadBalancerName": "[parameters('dbloadBalancer')]",
+		"dblbID": "[resourceId('Microsoft.Network/loadBalancers',variables('dbloadBalancerName'))]",
+		"dbloadBalancerFrontEndName": "[concat(variables('dbloadBalancerName'),'-frontendipconfig')]",
+		"dbloadBalancerBackEndName": "loadBalancerBackEnd",
+		"dbloadBalancerProbeName": "loadBalancerHttpProbe",
+		"dbhealthProbeName": "dbloadBalancerHealthPorbe",
+		"dbLBBEAddressPoolID": "[concat(variables('dblbID'),'/backendAddressPools/',variables('dbbePoolName'))]",
+		"dbLBProbeID1": "[concat(variables('dblbID'),'/probes/',variables('dbhealthProbeName'))]",
+		"dbloadBalancerNatPoolName": "loadBalancerNatPool",
+		"dbfrontEndIPConfigID": "[concat(variables('dblbID'),'/frontendIPConfigurations/',variables('dbloadBalancerFrontEndName'))]",
+		"dbbePoolName": "dbbepool",
+		"imagePublisher": "MicrosoftWindowsServer",
+		"imageOffer": "WindowsServer",
+		"vmAdminUsername": "[parameters('vmAdminUsername')]",
+		"vmAdminPassword": "[parameters('vmAdminPassword')]"
+	},
+	"resources": [{
+			"type": "Microsoft.Storage/storageAccounts",
+			"sku": {
+				"name": "Standard_LRS"
+			},
+			"kind": "StorageV2",
+			"name": "[variables('webStorageAccountName')]",
+			"apiVersion": "2019-04-01",
+			"location": "[resourceGroup().location]"
+		},
+		{
+			"type": "Microsoft.Storage/storageAccounts",
+			"sku": {
+				"name": "Standard_LRS"
+			},
+			"kind": "StorageV2",
+			"name": "[variables('appStorageAccountName')]",
+			"apiVersion": "2019-04-01",
+			"location": "[resourceGroup().location]"
+		},
+		{
+			"type": "Microsoft.Storage/storageAccounts",
+			"sku": {
+				"name": "Standard_LRS"
+			},
+			"kind": "StorageV2",
+			"name": "[variables('dbStorageAccountName')]",
+			"apiVersion": "2019-04-01",
+			"location": "[resourceGroup().location]"
+		},
+		{
+			"type": "Microsoft.Compute/availabilitySets",
+			"sku": {
+				"name": "Aligned"
+			},
+			"name": "[parameters('webASName')]",
+			"apiVersion": "2017-03-30",
+			"location": "[variables('location')]",
+			"properties": {
+				"platformFaultDomainCount": "[variables('faultDomain')]",
+				"platformUpdateDomainCount": "[variables('updateDomain')]"
+			}
+		},
+		{
+			"type": "Microsoft.Compute/availabilitySets",
+			"sku": {
+				"name": "Aligned"
+			},
+			"name": "[parameters('appASName')]",
+			"apiVersion": "2017-03-30",
+			"location": "[variables('location')]",
+			"properties": {
+				"platformFaultDomainCount": "[variables('faultDomain')]",
+				"platformUpdateDomainCount": "[variables('updateDomain')]"
+			}
+		},
+		{
+			"type": "Microsoft.Compute/availabilitySets",
+			"sku": {
+				"name": "Aligned"
+			},
+			"name": "[parameters('dbASName')]",
+			"apiVersion": "2017-03-30",
+			"location": "[variables('location')]",
+			"properties": {
+				"platformFaultDomainCount": "[variables('faultDomain')]",
+				"platformUpdateDomainCount": "[variables('updateDomain')]"
+			}
+		},
+		{
+			"type": "Microsoft.Network/networkSecurityGroups",
+			"name": "[variables('webNSGName')]",
+			"apiVersion": "2016-03-30",
+			"location": "[variables('location')]",
+			"comments": "NSG for Web Subnet. Rules for allowing HTTP and HTTPS requests from internet are created",
+			"properties": {
+				"securityRules": [{
+						"name": "HTTP-allow",
+						"properties": {
+							"protocol": "Tcp",
+							"sourcePortRange": "*",
+							"destinationPortRange": "80",
+							"sourceAddressPrefix": "[parameters('remoteAllowedCIDR')]",
+							"destinationAddressPrefix": "*",
+							"access": "Allow",
+							"priority": 110,
+							"direction": "Inbound"
+						}
+					},
+					{
+						"name": "HTTPS-allow",
+						"properties": {
+							"protocol": "Tcp",
+							"sourcePortRange": "*",
+							"destinationPortRange": "443",
+							"sourceAddressPrefix": "[parameters('remoteAllowedCIDR')]",
+							"destinationAddressPrefix": "*",
+							"access": "Allow",
+							"priority": 120,
+							"direction": "Inbound"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "Microsoft.Network/networkSecurityGroups",
+			"name": "[variables('appNSGName')]",
+			"apiVersion": "2016-03-30",
+			"location": "[variables('location')]",
+			"comments": "NSG for app Subnet. By default, intra Vnet traffic is allowed and requests from internet are denied",
+			"properties": {
+				"securityRules": []
+			}
+		},
+		{
+			"type": "Microsoft.Network/networkSecurityGroups",
+			"name": "[variables('databaseNSGName')]",
+			"apiVersion": "2016-03-30",
+			"location": "[variables('location')]",
+			"comments": "NSG for Database Subnet. By default, intra Vnet traffic is allowed and requests from internet are denied",
+			"properties": {
+				"securityRules": []
+			}
+		},
+		{
+			"type": "Microsoft.Network/loadBalancers",
+			"name": "[variables('webloadBalancerName')]",
+			"apiVersion": "2018-12-01",
+			"sku": {
+					"name": "[variables('lbSkuName')]"
+				},
+			"location": "[variables('location')]",
+			"comments": "This Internal Load Balancer is used to load balance traffic from web VM's to Bussiness Tier VMs",
+			"properties": {
+				"frontendIPConfigurations": [{
+					"name": "[variables('webloadBalancerFrontEndName')]",
+					"properties": {
+						"subnet": {
+							"id": "[toLower(concat(variables('vnetResourceId'), '/subnets/', parameters('websubnetName')))]"
+						}
+					}
+				}],
+				"backendAddressPools": [{
+					"name": "[variables('webbePoolName')]"
+				}],
+				"loadBalancingRules": [{
+					"name": "[concat(parameters('webloadBalancer'),'-lbrule')]",
+					"properties": {
+						"frontendIPConfiguration": {
+							"id": "[variables('webfrontEndIPConfigID')]"
+						},
+						"backendAddressPool": {
+							"id": "[variables('webLBBEAddressPoolID')]"
+						},
+						"probe": {
+							"id": "[variables('webLBProbeID1')]"
+						},
+						"protocol": "Tcp",
+						"frontendPort": "[parameters('webfrontEndPort')]",
+						"backendPort": "[parameters('webBackEndPort')]",
+						"idleTimeoutInMinutes": 15
+					}
+				}],
+				"probes": [{
+					"name": "[variables('webhealthProbeName')]",
+					"properties": {
+						"protocol": "[parameters('webhealthProbeProtcol')]",
+						"port": "[parameters('webBackEndPort')]",
+						"requestPath": "[if(not(equals(parameters('webhealthProbeProtcol'),'TCP')),parameters('webHTTPrequestPath'),json('null'))]",
+						"intervalInSeconds": 15,
+						"numberOfProbes": 2
+					}
+				}]
+			}
+		},
+		{
+			"type": "Microsoft.Network/loadBalancers",
+			"name": "[variables('apploadBalancerName')]",
+			"apiVersion": "2018-12-01",
+			"sku": {
+					"name": "[variables('lbSkuName')]"
+				},
+			"location": "[variables('location')]",
+			"comments": "This Internal Load Balancer is used to load balance traffic from app VM's to Bussiness Tier VMs",
+			"properties": {
+				"frontendIPConfigurations": [{
+					"name": "[variables('apploadBalancerFrontEndName')]",
+					"properties": {
+						"subnet": {
+							"id": "[toLower(concat(variables('vnetResourceId'), '/subnets/', parameters('appsubnetName')))]"
+						}
+					}
+				}],
+				"backendAddressPools": [{
+					"name": "[variables('appbePoolName')]"
+				}],
+				"loadBalancingRules": [{
+					"name": "[concat(parameters('apploadBalancer'),'-lbrule')]",
+					"properties": {
+						"frontendIPConfiguration": {
+							"id": "[variables('appfrontEndIPConfigID')]"
+						},
+						"backendAddressPool": {
+							"id": "[variables('appLBBEAddressPoolID')]"
+						},
+						"probe": {
+							"id": "[variables('appLBProbeID1')]"
+						},
+						"protocol": "Tcp",
+						"frontendPort": "[parameters('appfrontEndPort')]",
+						"backendPort": "[parameters('appBackEndPort')]",
+						"idleTimeoutInMinutes": 15
+					}
+				}],
+				"probes": [{
+					"name": "[variables('apphealthProbeName')]",
+					"properties": {
+						"protocol": "[parameters('apphealthProbeProtcol')]",
+						"port": "[parameters('appBackEndPort')]",
+						"requestPath": "[if(not(equals(parameters('apphealthProbeProtcol'),'TCP')),parameters('appHTTPrequestPath'),json('null'))]",
+						"intervalInSeconds": 15,
+						"numberOfProbes": 2
+					}
+				}]
+			}
+		},
+		{
+			"type": "Microsoft.Network/loadBalancers",
+			"name": "[variables('dbloadBalancerName')]",
+			"apiVersion": "2018-12-01",
+			"sku": {
+					"name": "[variables('lbSkuName')]"
+				},
+			"location": "[variables('location')]",
+			"comments": "This Internal Load Balancer is used to load balance traffic from db VM's to Bussiness Tier VMs",
+			"properties": {
+				"frontendIPConfigurations": [{
+					"name": "[variables('dbloadBalancerFrontEndName')]",
+					"properties": {
+						"subnet": {
+							"id": "[toLower(concat(variables('vnetResourceId'), '/subnets/', parameters('dbsubnetName')))]"
+						}
+					}
+				}],
+				"backendAddressPools": [{
+					"name": "[variables('dbbePoolName')]"
+				}],
+				"loadBalancingRules": [{
+					"name": "[concat(parameters('dbloadBalancer'),'-lbrule')]",
+					"properties": {
+						"frontendIPConfiguration": {
+							"id": "[variables('dbfrontEndIPConfigID')]"
+						},
+						"backendAddressPool": {
+							"id": "[variables('dbLBBEAddressPoolID')]"
+						},
+						"probe": {
+							"id": "[variables('dbLBProbeID1')]"
+						},
+						"protocol": "Tcp",
+						"frontendPort": "[parameters('dbfrontEndPort')]",
+						"backendPort": "[parameters('dbBackEndPort')]",
+						"idleTimeoutInMinutes": 15
+					}
+				}],
+				"probes": [{
+					"name": "[variables('dbhealthProbeName')]",
+					"properties": {
+						"protocol": "[parameters('dbhealthProbeProtcol')]",
+						"port": "[parameters('dbBackEndPort')]",
+						"requestPath": "[if(not(equals(parameters('dbhealthProbeProtcol'),'TCP')),parameters('dbHTTPrequestPath'),json('null'))]",
+						"intervalInSeconds": 15,
+						"numberOfProbes": 2
+					}
+				}]
+			}
+		},
+		{
+			"type": "Microsoft.Network/networkInterfaces",
+			"name": "[concat(parameters('webvmName'), parameters('webCountNumber')[copyIndex()],'-', parameters('vmNic1Name'))]",
+			"apiVersion": "2016-03-30",
+			"location": "[variables('location')]",
+			"copy": {
+				"name": "networkInterfacesVM",
+				"count": "[length(parameters('webCountNumber'))]"
+			},
+			"dependsOn": [
+				"[concat('Microsoft.Network/loadBalancers/', variables('webloadBalancerName'))]",
+				"[variables('webNSGName')]"
+			],
+			"properties": {
+				"primary": true,
+				"ipConfigurations": [{
+					"name": "[concat(parameters('webvmName'),parameters('webCountNumber')[copyIndex()],'-ipconfig')]",
+					"properties": {
+						"privateIPAllocationMethod": "Dynamic",
+						"subnet": {
+							"id": "[toLower(concat(variables('vnetResourceId'), '/subnets/', parameters('websubnetName')))]"
+						},
+						"loadBalancerBackendAddressPools": [{
+							"id": "[variables('webLBBEAddressPoolID')]"
+						}]
+					}
+				}],
+				"enableIPForwarding": false,
+				"networkSecurityGroup": {
+					"id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('webNSGName'))]"
+				}
+			}
+		},
+		{
+			"type": "Microsoft.Network/networkInterfaces",
+			"name": "[concat(parameters('appvmName'), parameters('appCountNumber')[copyIndex()],'-', parameters('vmNic1Name'))]",
+			"apiVersion": "2016-03-30",
+			"location": "[variables('location')]",
+			"copy": {
+				"name": "networkInterfacesVM",
+				"count": "[length(parameters('appCountNumber'))]"
+			},
+			"dependsOn": [
+				"[concat('Microsoft.Network/loadBalancers/', variables('apploadBalancerName'))]",
+				"[variables('appNSGName')]"
+			],
+			"properties": {
+				"primary": true,
+				"ipConfigurations": [{
+					"name": "[concat(parameters('appvmName'),parameters('appCountNumber')[copyIndex()],'-ipconfig')]",
+					"properties": {
+						"privateIPAllocationMethod": "Dynamic",
+						"subnet": {
+							"id": "[toLower(concat(variables('vnetResourceId'), '/subnets/', parameters('appsubnetName')))]"
+						},
+						"loadBalancerBackendAddressPools": [{
+							"id": "[variables('appLBBEAddressPoolID')]"
+						}]
+					}
+				}],
+				"enableIPForwarding": false,
+				"networkSecurityGroup": {
+					"id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('appNSGName'))]"
+				}
+			}
+		},
+		{
+			"type": "Microsoft.Network/networkInterfaces",
+			"name": "[concat(parameters('dbvmName'), parameters('dbCountNumber')[copyIndex()],'-', parameters('vmNic1Name'))]",
+			"apiVersion": "2016-03-30",
+			"location": "[variables('location')]",
+			"copy": {
+				"name": "networkInterfacesVM",
+				"count": "[length(parameters('dbCountNumber'))]"
+			},
+			"dependsOn": [
+				"[concat('Microsoft.Network/loadBalancers/', variables('dbloadBalancerName'))]",
+				"[variables('databaseNSGName')]"
+			],
+			"properties": {
+				"primary": true,
+				"ipConfigurations": [{
+					"name": "[concat(parameters('dbvmName'),parameters('dbCountNumber')[copyIndex()],'-ipconfig')]",
+					"properties": {
+						"privateIPAllocationMethod": "Dynamic",
+						"subnet": {
+							"id": "[toLower(concat(variables('vnetResourceId'), '/subnets/', parameters('dbsubnetName')))]"
+						},
+						"loadBalancerBackendAddressPools": [{
+							"id": "[variables('dbLBBEAddressPoolID')]"
+						}]
+					}
+				}],
+				"enableIPForwarding": false,
+				"networkSecurityGroup": {
+					"id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('databaseNSGName'))]"
+				}
+			}
+		},
+		{
+			"type": "Microsoft.Compute/virtualMachines",
+			"name": "[concat(parameters('webvmName'),parameters('webCountNumber')[copyIndex()])]",
+			"apiVersion": "2018-06-01",
+			"location": "[variables('location')]",
+			"copy": {
+				"name": "networkInterfacesVM",
+				"count": "[length(parameters('webCountNumber'))]"
+			},
+			"properties": {
+				"availabilitySet": {
+					"id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('webASName'))]"
+				},
+				"osProfile": {
+					"computerName": "[concat(parameters('webvmName'),parameters('webCountNumber')[copyIndex()])]",
+					"adminUsername": "[variables('vmAdminUsername')]",
+					"adminPassword": "[variables('vmAdminPassword')]",
+					"windowsConfiguration": {
+						"provisionVMAgent": true,
+						"enableAutomaticUpdates": true,
+						"winRM": null
+					},
+					"secrets": []
+				},
+				"hardwareProfile": {
+					"vmSize": "[parameters('webvmSize')]"
+				},
+				"storageProfile": {
+					"imageReference": {
+						"publisher": "[variables('imagePublisher')]",
+						"offer": "[variables('imageOffer')]",
+						"sku": "[parameters('webwindowsOSVersion')]",
+						"version": "latest"
+					},
+					"osDisk": {
+						"createOption": "FromImage",
+						"name": "[concat(parameters('webvmName'),parameters('webCountNumber')[copyIndex()],'-osDisk')]",
+						"managedDisk": {
+							"storageAccountType": "[parameters('webstorageAccType')]"
+						}
+					},
+					"dataDisks": "[parameters('dataDisks')]"
+				},
+
+				"diagnosticsProfile": {
+					"bootDiagnostics": {
+						"enabled": true,
+						"storageUri": "[concat('https://', variables('webStorageAccountName'), '.blob.core.windows.net')]"
+					}
+				},
+				"networkProfile": {
+					"networkInterfaces": [{
+						"properties": {
+							"primary": true
+						},
+						"id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('webvmName'),parameters('webCountNumber')[copyIndex()],'-', parameters('vmNic1Name')))]"
+					}]
+				}
+			},
+
+			"dependsOn": [
+				"[resourceId('Microsoft.Storage/storageAccounts/', variables('webStorageAccountName'))]",
+				"[concat('Microsoft.Network/networkInterfaces/',parameters('webvmName'),parameters('webCountNumber')[copyIndex()],'-', parameters('vmNic1Name'))]",
+				"[resourceId('Microsoft.Compute/AvailabilitySets/', parameters('webASName'))]"
+			]
+		},
+		{
+			"type": "Microsoft.Compute/virtualMachines",
+			"name": "[concat(parameters('appvmName'),parameters('appCountNumber')[copyIndex()])]",
+			"apiVersion": "2018-06-01",
+			"location": "[variables('location')]",
+			"copy": {
+				"name": "networkInterfacesVM",
+				"count": "[length(parameters('appCountNumber'))]"
+			},
+			"properties": {
+				"availabilitySet": {
+					"id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('appASName'))]"
+				},
+				"osProfile": {
+					"computerName": "[concat(parameters('appvmName'),parameters('appCountNumber')[copyIndex()])]",
+					"adminUsername": "[variables('vmAdminUsername')]",
+					"adminPassword": "[variables('vmAdminPassword')]",
+					"windowsConfiguration": {
+						"provisionVMAgent": true,
+						"enableAutomaticUpdates": true,
+						"winRM": null
+					},
+					"secrets": []
+				},
+				"hardwareProfile": {
+					"vmSize": "[parameters('appvmSize')]"
+				},
+				"storageProfile": {
+					"imageReference": {
+						"publisher": "[variables('imagePublisher')]",
+						"offer": "[variables('imageOffer')]",
+						"sku": "[parameters('appwindowsOSVersion')]",
+						"version": "latest"
+					},
+					"osDisk": {
+						"createOption": "FromImage",
+						"name": "[concat(parameters('appvmName'),parameters('appCountNumber')[copyIndex()],'-osDisk')]",
+						"managedDisk": {
+							"storageAccountType": "[parameters('appstorageAccType')]"
+						}
+					},
+					"dataDisks": "[parameters('appdataDisks')]"
+				},
+
+				"diagnosticsProfile": {
+					"bootDiagnostics": {
+						"enabled": true,
+						"storageUri": "[concat('https://', variables('appStorageAccountName'), '.blob.core.windows.net')]"
+					}
+				},
+				"networkProfile": {
+					"networkInterfaces": [{
+						"properties": {
+							"primary": true
+						},
+						"id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('appvmName'),parameters('appCountNumber')[copyIndex()],'-',parameters('vmNic1Name')))]"
+					}]
+				}
+			},
+
+			"dependsOn": [
+				"[resourceId('Microsoft.Storage/storageAccounts/', variables('appStorageAccountName'))]",
+				"[concat('Microsoft.Network/networkInterfaces/',parameters('appvmName'),parameters('appCountNumber')[copyIndex()],'-', parameters('vmNic1Name'))]",
+				"[resourceId('Microsoft.Compute/AvailabilitySets/', parameters('appASName'))]"
+			]
+		},
+		{
+			"type": "Microsoft.Compute/virtualMachines",
+			"name": "[concat(parameters('dbvmName'),parameters('dbCountNumber')[copyIndex()])]",
+			"apiVersion": "2018-06-01",
+			"location": "[variables('location')]",
+			"copy": {
+				"name": "networkInterfacesVM",
+				"count": "[length(parameters('dbCountNumber'))]"
+			},
+			"properties": {
+				"availabilitySet": {
+					"id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('dbASName'))]"
+				},
+				"osProfile": {
+					"computerName": "[concat(parameters('dbvmName'),parameters('dbCountNumber')[copyIndex()])]",
+					"adminUsername": "[variables('vmAdminUsername')]",
+					"adminPassword": "[variables('vmAdminPassword')]",
+					"windowsConfiguration": {
+						"provisionVMAgent": true,
+						"enableAutomaticUpdates": true,
+						"winRM": null
+					},
+					"secrets": []
+				},
+				"hardwareProfile": {
+					"vmSize": "[parameters('dbvmSize')]"
+				},
+				"storageProfile": {
+					"imageReference": {
+						"publisher": "[variables('imagePublisher')]",
+						"offer": "[variables('imageOffer')]",
+						"sku": "[parameters('dbwindowsOSVersion')]",
+						"version": "latest"
+					},
+					"osDisk": {
+						"createOption": "FromImage",
+						"name": "[concat(parameters('dbvmName'),parameters('dbCountNumber')[copyIndex()],'-osDisk')]",
+						"managedDisk": {
+							"storageAccountType": "[parameters('dbstorageAccType')]"
+						}
+					},
+					"dataDisks": "[parameters('dbdataDisks')]"
+				},
+
+				"diagnosticsProfile": {
+					"bootDiagnostics": {
+						"enabled": true,
+						"storageUri": "[concat('https://', variables('dbStorageAccountName'), '.blob.core.windows.net')]"
+					}
+				},
+				"networkProfile": {
+					"networkInterfaces": [{
+						"properties": {
+							"primary": true
+						},
+						"id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('dbvmName'),parameters('dbCountNumber')[copyIndex()],'-',parameters('vmNic1Name')))]"
+					}]
+				}
+			},
+
+			"dependsOn": [
+				"[resourceId('Microsoft.Storage/storageAccounts/', variables('dbStorageAccountName'))]",
+				"[concat('Microsoft.Network/networkInterfaces/',parameters('dbvmName'),parameters('dbCountNumber')[copyIndex()],'-', parameters('vmNic1Name'))]",
+				"[resourceId('Microsoft.Compute/AvailabilitySets/', parameters('dbASName'))]"
+			]
+		}
+	]
+}
