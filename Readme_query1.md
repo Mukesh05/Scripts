@@ -36,14 +36,23 @@ There are two files for deployment
     Azure provides severval ways to deploy ARM templates such as using Azure CLI, using Azure Powershell, through Azure portal among others. 
     I've used cloud Shell and Azure powershell to deploy the ARM templates.
     - Upload both `threeTier.json` and `threeTier.parameters.json` files to cloud drive.
-      ![image](https://user-images.githubusercontent.com/13200163/145169955-342c4580-4945-4700-bec5-0e6a561fe515.png)
+      ![upload](https://user-images.githubusercontent.com/13200163/145169955-342c4580-4945-4700-bec5-0e6a561fe515.png)
       
     - Validate the template using `Test-AzResourceGroupDeployment` cmdlet that determines whether an Azure resource group deployment template and its parameter values are       valid. 
       ``` PowerShell
       Test-AzResourceGroupDeployment -ResourceGroupName "ThreeTierAppArchitecture" `
       -TemplateFile .\threeTier.json -TemplateParameterFile threeTier.parameters.json.json"
       ```
-      ![image](https://user-images.githubusercontent.com/13200163/145169700-6f7b319f-61c5-41a3-8e14-c323122f9c9d.png)
+      ![Validate](https://user-images.githubusercontent.com/13200163/145169700-6f7b319f-61c5-41a3-8e14-c323122f9c9d.png)
+      
+    - Deploy the template using `New-AzResourceGroupDeployment` cmdlet
+      ``` PowerShell
+      New-AzResourceGroupDeployment -ResourceGroupName "ThreeTierAppArchitecture" `
+      -TemplateFile .\threeTier.json -TemplateParameterFile threeTier.parameters.json.json"
+      ```
+      ![Deployment](https://user-images.githubusercontent.com/13200163/145171246-4657170f-3528-4401-8bdc-92614fc4cb1f.png)
+
+      
 
 
 
