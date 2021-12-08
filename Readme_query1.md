@@ -1,4 +1,4 @@
-# KPMG
+# Query1
 ## Overview
 
 The 3 tier application architecture setup is provisioned and deployed using Azure Resource Manager(ARM) templates to an Azure subscription.
@@ -36,12 +36,15 @@ There are two files for deployment
     Azure provides severval ways to deploy ARM templates such as using Azure CLI, using Azure Powershell, through Azure portal among others. 
     I've used cloud Shell and Azure powershell to deploy the ARM templates.
     - Upload both `threeTier.json` and `threeTier.parameters.json` files to cloud drive.
-      ![Files](https://user-images.githubusercontent.com/13200163/145167432-d02ab8e8-988d-4635-8bb7-ddf0b01e515e.png)
-    - Validate the template using native 
+      ![image](https://user-images.githubusercontent.com/13200163/145169955-342c4580-4945-4700-bec5-0e6a561fe515.png)
+      
+    - Validate the template using `Test-AzResourceGroupDeployment` cmdlet that determines whether an Azure resource group deployment template and its parameter values are       valid. 
       ``` PowerShell
       Test-AzResourceGroupDeployment -ResourceGroupName "ThreeTierAppArchitecture" `
       -TemplateFile .\threeTier.json -TemplateParameterFile threeTier.parameters.json.json"
       ```
+      ![image](https://user-images.githubusercontent.com/13200163/145169700-6f7b319f-61c5-41a3-8e14-c323122f9c9d.png)
+
 
 
 
