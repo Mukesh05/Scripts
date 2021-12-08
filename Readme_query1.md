@@ -51,6 +51,12 @@ There are two files for deployment
       -TemplateFile .\threeTier.json -TemplateParameterFile threeTier.parameters.json.json"
       ```
       ![Deployment](https://user-images.githubusercontent.com/13200163/145171246-4657170f-3528-4401-8bdc-92614fc4cb1f.png)
+      
+   - Post Deployment
+     ![PostDeployment](https://user-images.githubusercontent.com/13200163/145176683-4dd58a91-7665-4373-9938-1c1ee3180fb6.png)
+     ![Portalview](https://user-images.githubusercontent.com/13200163/145177071-47640b75-64e1-4794-ba66-a2ca57c089bd.png)
+
+
 
       
 
