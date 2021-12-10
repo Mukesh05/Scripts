@@ -20,6 +20,12 @@ The solution assumes there is a pre created Resource Group(RG) for networking co
 There are two files for deployment
 - threeTier.json
 - threeTier.parameters.json
+- 
+### Architecture
+A single ARM template is used to deploy a three tier application architecture to a single resource group.
+
+![image](https://user-images.githubusercontent.com/13200163/145585460-6cdf628c-db7b-48ef-8727-18eed0d4dbc0.png)
+
 
 ### Deployment
 
