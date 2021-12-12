@@ -20,13 +20,15 @@ The solution assumes there is a pre created Resource Group(RG) for networking co
 There are two files for deployment
 - threeTier.json
 - threeTier.parameters.json
-- 
+
 ### Architecture
 A single ARM template is used to deploy a three tier application architecture to a single resource group.
 
 ![image](https://user-images.githubusercontent.com/13200163/145585460-6cdf628c-db7b-48ef-8727-18eed0d4dbc0.png)
 
-The ARM template deployes the below Azure resources to achieve the desired state of a three tier application infrastructure. The infrastructure consists of 
+The ARM template deployes the below Azure resources to achieve the desired state of a three tier application infrastructure. The infrastructure deployed consists of a
+virtual machine, a storage account, an availability set, a load balancer and networking components for each tier. 
+Below diagram shows the visual representation of the ARM template.
 
 ![image](https://user-images.githubusercontent.com/13200163/145711895-ca08750a-9d67-41b4-806b-d19fc15cc89f.png)
 
@@ -63,7 +65,9 @@ The ARM template deployes the below Azure resources to achieve the desired state
 
       
    - Post Deployment
+   
       - Screenshots
+      
      ![PostDeployment](https://user-images.githubusercontent.com/13200163/145176683-4dd58a91-7665-4373-9938-1c1ee3180fb6.png)
      
      ![Portalview](https://user-images.githubusercontent.com/13200163/145177071-47640b75-64e1-4794-ba66-a2ca57c089bd.png)
