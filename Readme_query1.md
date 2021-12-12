@@ -45,7 +45,7 @@ Below diagram shows the visual representation of the ARM template.
     
   - During deployment
   
-    Azure provides severval ways to deploy ARM templates such as using Azure CLI, using Azure Powershell, through Azure portal among others. 
+    Azure provides several ways to deploy ARM templates such as using Azure CLI, using Azure Powershell, through Azure portal among others. 
     I've used cloud Shell and Azure powershell to deploy the ARM templates.
     - Upload both `threeTier.json` and `threeTier.parameters.json` files to cloud drive.
       ![upload](https://user-images.githubusercontent.com/13200163/145169955-342c4580-4945-4700-bec5-0e6a561fe515.png)
