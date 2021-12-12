@@ -26,6 +26,9 @@ A single ARM template is used to deploy a three tier application architecture to
 
 ![image](https://user-images.githubusercontent.com/13200163/145585460-6cdf628c-db7b-48ef-8727-18eed0d4dbc0.png)
 
+The ARM template deployes the below Azure resources to achieve the desired state of a three tier application infrastructure. The infrastructure consists of 
+
+![image](https://user-images.githubusercontent.com/13200163/145711895-ca08750a-9d67-41b4-806b-d19fc15cc89f.png)
 
 ### Deployment
 
@@ -47,16 +50,17 @@ A single ARM template is used to deploy a three tier application architecture to
     - Validate the template using `Test-AzResourceGroupDeployment` cmdlet that determines whether an Azure resource group deployment template and its parameter values are       valid. 
       ``` PowerShell
       Test-AzResourceGroupDeployment -ResourceGroupName "ThreeTierAppArchitecture" `
-      -TemplateFile .\threeTier.json -TemplateParameterFile threeTier.parameters.json.json"
+      -TemplateFile ./threeTier.json -TemplateParameterFile ./threeTier.parameters.json.json"
       ```
       ![Validate](https://user-images.githubusercontent.com/13200163/145169700-6f7b319f-61c5-41a3-8e14-c323122f9c9d.png)
       
     - Deploy the template using `New-AzResourceGroupDeployment` cmdlet
       ``` PowerShell
-      New-AzResourceGroupDeployment -ResourceGroupName "ThreeTierAppArchitecture" `
-      -TemplateFile .\threeTier.json -TemplateParameterFile threeTier.parameters.json.json"
+      New-AzResourceGroupDeployment -Name threeTierAppInfraDeployment -ResourceGroupName "ThreeTierAppArchitecture" `
+      -TemplateFile ./threeTier.json -TemplateParameterFile ./threeTier.parameters.json.json"
       ```
-      ![Deployment](https://user-images.githubusercontent.com/13200163/145171246-4657170f-3528-4401-8bdc-92614fc4cb1f.png)
+      ![Deployment](https://user-images.githubusercontent.com/13200163/145711486-ef284daa-ba54-452a-9f8c-6e2236a938cd.png)
+
       
    - Post Deployment
       - Screenshots
