@@ -9,7 +9,8 @@ The 3 tier application architecture setup is provisioned and deployed using Azur
 - At least ["Contributor"](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) role in the target subscriptions
 
 ### Assumptions
-The solution assumes there is a pre created Resource Group(RG) for networking componets such as load balancers and IP adresses. 
+The solution assumes there is a pre created Resource Group(RG) for networking componets such as load balancers and IP adresses. The virtual Nework and its resource group is passed as parameters during the template deployment. An azure key vault is also pre created in the same resource group.
+
 - A separate Resource Group for Networking.
 - a key vault that holds the secret for Virtual machines's password
 - To access a key vault during template deployment, **enabledForTemplateDeployment** on the key vault to set to **true**.
