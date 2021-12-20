@@ -4,7 +4,7 @@ This Scripts repository contains scripts and codes that I author, modify for cus
 ## snapshotAzure
   The script creates, restores and deletes snapshots of disks attached to an Azure VM.  
 
-## A bug in az cli version 2.29
+## A bug in az cli version 2.29 [Oct 21]
 I recently faced an issue with az CLI during deployment of a function app in my azure devops pipelines. The az cli version 2.29 had a 
 bug that did not let the function app to deploy.
 We have separate pipelines for each function. For eample - a pipeline for Intune, another pipeline for CSP biling, among others. 
