@@ -13,7 +13,7 @@ These pipelines use templates to describe stages and jobs that are deployed to e
 One such template was for deploying code. This template contained steps for deploying the function app. The deployment needed az cli. 
 The pipelines, by default, installs the latest version available. and our pipelines was installing az cli v2.29.0 
 I had to determine the OS type of VM Image and then focre version constraint on az cli. 
-Below code is a snippet of how I achieved this.
+Below snippet of the code shows how I achieved this using parameters and agent variables.
 
 ![image](https://user-images.githubusercontent.com/13200163/146733981-85e5b7d9-7afb-4cca-94f6-ba7541bf9948.png)
 
